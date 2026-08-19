@@ -65,6 +65,18 @@ npm start
 5. Deploy 之後，喺 Railway 嘅 Shell（或者本機連線）一次性跑 `npm run seed` 建立管理員帳號
 6. 之後每次 push 去 GitHub 就自動重新部署，`data/` 入面嘅內容唔會受影響
 
+## 網站設計 (後台可換設計)
+
+後台加咗一個「🎨 網站設計」頁（`/admin/theme`），可以喺唔使改code、唔使重新部署嘅情況下即時更換：
+- 主色調 / 背景色 / 文字色（`--color-accent` / `--color-bg` / `--color-text` 三個CSS變數，`public/css/site.css`全部card/button/link都跟住呢三個變數）
+- 字體（可以填CSS font-family，配合Google Fonts連結使用）
+- Logo（上傳新圖直接換走）
+- 自訂CSS（進階：直接寫CSS覆蓋任何樣式，會加喺 `</head>` 之前，優先級最高）
+
+運作原理：呢啲設定存喺 `settings` 資料表，前台每次render都會讀取並輸出成inline `<style>` block（喺 `views/public/partials/header.ejs`），所以改完即刻全站生效。
+
+如果之後想要更大幅度嘅設計改動（例如完全唔同嘅排版結構），就要直接改 `public/css/site.css` 同 `views/public/*.ejs` 嘅HTML結構，Theme頁淨係處理顏色/字體/logo/自訂CSS呢幾個層面。
+
 ## 常見問題 Troubleshooting
 
 **Railway部署時 `npm install` 失敗，報 `better-sqlite3` / `node-gyp` / `distutils` 錯誤**

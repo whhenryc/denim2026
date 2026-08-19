@@ -10,6 +10,54 @@ function slugify(str) {
     .replace(/(^-|-$)/g, '') || `item-${Date.now()}`;
 }
 
+// =========================================================
+// 網站設計 Theme (顏色/字體/logo/自訂CSS)
+// =========================================================
+const THEME_KEYS = [
+  'theme_primary_color', 'theme_bg_color', 'theme_text_color',
+  'theme_font_family', 'theme_google_font_url', 'theme_logo', 'theme_custom_css'
+];
+const THEME_DEFAULTS = {
+  theme_primary_color: '#7a1f1f',
+  theme_bg_color: '#ffffff',
+  theme_text_color: '#111111',
+  theme_font_family: "-apple-system, 'PingFang HK', 'Noto Sans TC', sans-serif",
+  theme_google_font_url: '',
+  theme_logo: '/images/logo.svg',
+  theme_custom_css: ''
+};
+
+function getThemeSettings() {
+  const rows = db.prepare('SELECT key, value FROM settings').all();
+  const map = {};
+  rows.forEach(r => map[r.key] = r.value);
+  return { ...THEME_DEFAULTS, ...map };
+}
+
+router.get('/theme', (req, res) => {
+  res.render('admin/theme-form', { theme: getThemeSettings() });
+});
+
+router.post('/theme', upload.single('logo_file'), (req, res) => {
+  const b = req.body;
+  const upsert = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
+
+  upsert.run('theme_primary_color', b.theme_primary_color || THEME_DEFAULTS.theme_primary_color);
+  upsert.run('theme_bg_color', b.theme_bg_color || THEME_DEFAULTS.theme_bg_color);
+  upsert.run('theme_text_color', b.theme_text_color || THEME_DEFAULTS.theme_text_color);
+  upsert.run('theme_font_family', b.theme_font_family || THEME_DEFAULTS.theme_font_family);
+  upsert.run('theme_google_font_url', b.theme_google_font_url || '');
+  upsert.run('theme_custom_css', b.theme_custom_css || '');
+
+  if (req.file) {
+    upsert.run('theme_logo', `/uploads/${req.file.filename}`);
+  } else if (b.existing_logo) {
+    upsert.run('theme_logo', b.existing_logo);
+  }
+
+  res.redirect('/admin/theme');
+});
+
 // ---------- Dashboard ----------
 router.get('/', (req, res) => {
   const counts = {

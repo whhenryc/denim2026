@@ -10,6 +10,29 @@ router.use((req, res, next) => {
   next();
 });
 
+// 網站設計設定（顏色/字體/logo/自訂CSS），全部前台頁面共用
+const THEME_DEFAULTS = {
+  theme_primary_color: '#7a1f1f',
+  theme_bg_color: '#ffffff',
+  theme_text_color: '#111111',
+  theme_font_family: "-apple-system, 'PingFang HK', 'Noto Sans TC', sans-serif",
+  theme_google_font_url: '',
+  theme_logo: '/images/logo.svg',
+  theme_custom_css: ''
+};
+
+function getTheme() {
+  const rows = db.prepare('SELECT key, value FROM settings').all();
+  const map = {};
+  rows.forEach(r => map[r.key] = r.value);
+  return { ...THEME_DEFAULTS, ...map };
+}
+
+router.use((req, res, next) => {
+  res.locals.theme = getTheme();
+  next();
+});
+
 function getBlocks(pageKey) {
   const rows = db.prepare('SELECT * FROM page_blocks WHERE page_key = ? ORDER BY sort_order, id').all(pageKey);
   const map = {};
