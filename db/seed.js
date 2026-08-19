@@ -8,13 +8,17 @@ const ADMIN_USER = process.env.SEED_ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.SEED_ADMIN_PASS || 'changeme123';
 
 const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(ADMIN_USER);
+const hash = bcrypt.hashSync(ADMIN_PASS, 10);
+
 if (!existing) {
-  const hash = bcrypt.hashSync(ADMIN_PASS, 10);
   db.prepare('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)').run(ADMIN_USER, hash);
   console.log(`已建立管理員帳號: ${ADMIN_USER} / ${ADMIN_PASS}`);
-  console.log('請登入後台後盡快更改密碼（或直接修改 db 內嘅記錄）。');
 } else {
-  console.log('管理員帳號已存在，略過。');
+  // 帳號已存在：強制將密碼同步返做env variable嘅值。
+  // 咁樣每次改咗 SEED_ADMIN_PASS 之後，只要重新跑一次 npm run seed 就實時生效，
+  // 唔會出現「已改Variables但登入仍然係舊密碼」嘅情況。
+  db.prepare('UPDATE admin_users SET password_hash = ? WHERE username = ?').run(hash, ADMIN_USER);
+  console.log(`帳號 ${ADMIN_USER} 已存在，密碼已同步更新為Variables入面嘅 SEED_ADMIN_PASS。`);
 }
 
 // 示範靜態頁 block
