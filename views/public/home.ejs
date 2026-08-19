@@ -1,0 +1,86 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <h1><%= about.intro ? t(about.intro, 'title') : '' %></h1>
+</section>
+
+<section class="section">
+  <h2><%= lang === 'zh' ? '最新消息' : 'News' %></h2>
+  <div class="card-grid">
+    <% news.forEach(function(n) { %>
+      <a class="card" href="<%= n.link_type === 'internal' ? `/${lang}/news/${n.slug}` : n.link_url %>"
+         <%= n.link_type === 'external' ? 'target="_blank" rel="noopener"' : '' %>>
+        <img src="<%= n.cover_image %>" alt="">
+        <h3><%= t(n, 'title') %></h3>
+        <p><%= t(n, 'summary') %></p>
+      </a>
+    <% }) %>
+  </div>
+  <a class="more-link" href="/<%= lang %>/news"><%= lang === 'zh' ? '更多' : 'More' %></a>
+</section>
+
+<section class="section">
+  <h2><%= lang === 'zh' ? '活動資訊' : 'Programmes' %></h2>
+  <div class="card-grid">
+    <% programmes.forEach(function(p) { %>
+      <a class="card" href="/<%= lang %>/programmes/<%= p.slug %>">
+        <img src="<%= p.cover_image %>" alt="">
+        <h3><%= t(p, 'title') %></h3>
+        <p><%= t(p, 'date_text') %> <%= t(p, 'location') %></p>
+      </a>
+    <% }) %>
+  </div>
+  <a class="more-link" href="/<%= lang %>/programmes"><%= lang === 'zh' ? '更多' : 'More' %></a>
+</section>
+
+<section class="section">
+  <h2><%= lang === 'zh' ? '刊物' : 'Publications' %></h2>
+  <div class="card-grid">
+    <% publications.forEach(function(p) { %>
+      <a class="card" href="<%= p.pdf_url %>" target="_blank" rel="noopener">
+        <img src="<%= p.cover_image %>" alt="">
+        <p><%= t(p, 'title') %></p>
+      </a>
+    <% }) %>
+  </div>
+</section>
+
+<section class="section">
+  <h2><%= lang === 'zh' ? 'GDTP' : 'GDTP' %></h2>
+  <div class="card-grid">
+    <% designers.forEach(function(d) { %>
+      <div class="card">
+        <img src="<%= d.photo %>" alt="">
+        <h3><%= lang === 'zh' ? d.name_zh : d.name_en %></h3>
+        <p><%= d.brand_name %></p>
+      </div>
+    <% }) %>
+  </div>
+  <a class="more-link" href="/<%= lang %>/gdtp"><%= lang === 'zh' ? '更多' : 'More' %></a>
+</section>
+
+<section class="section">
+  <h2><%= lang === 'zh' ? '媒體報導' : 'Press' %></h2>
+  <div class="card-grid">
+    <% press.forEach(function(p) { %>
+      <a class="card" href="<%= p.link_url %>" target="_blank" rel="noopener">
+        <img src="<%= p.cover_image %>" alt="">
+        <p class="date"><%= p.published_date %> · <%= p.source_name %></p>
+        <h3><%= t(p, 'title') %></h3>
+      </a>
+    <% }) %>
+  </div>
+  <a class="more-link" href="/<%= lang %>/press"><%= lang === 'zh' ? '更多' : 'More' %></a>
+</section>
+
+<section class="section" id="contact">
+  <h2><%= lang === 'zh' ? '聯絡我們' : 'Contact' %></h2>
+  <% Object.values(contact).forEach(function(block) { %>
+    <div class="contact-block">
+      <h3><%= t(block, 'title') %></h3>
+      <div><%- t(block, 'content') %></div>
+    </div>
+  <% }) %>
+</section>
+
+<%- include('partials/footer') %>
