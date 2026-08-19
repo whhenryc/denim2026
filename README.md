@@ -64,6 +64,12 @@ npm start
 5. Deploy 之後，喺 Railway 嘅 shell / 或者本機連線一次性跑 `npm run seed` 建立管理員帳號
 6. 之後每次 push 去 GitHub 就自動重新部署
 
+## 常見問題 Troubleshooting
+
+**Railway部署時 `npm install` 失敗，報 `better-sqlite3` / `node-gyp` / `distutils` 錯誤**
+呢個係因為Railway預設用最新Node版本（例如24），`better-sqlite3` 呢類native套件未有對應嘅prebuilt binary，逼佢喺build時編譯，而編譯用嘅python環境又冇`distutils`，於是連環爆錯。
+已經喺呢個project加咗 `package.json` 嘅 `engines` 欄位 + `.nvmrc` + `nixpacks.toml`，鎖定用 **Node 20 LTS**（呢個版本better-sqlite3一定有現成binary，唔使編譯）。如果Railway之後仲係用緊舊版cache，去 Railway → Settings → 清緩存重新部署一次，或者手動喺Railway嘅 Variables 加 `NIXPACKS_NODE_VERSION=20`。
+
 ## 下一步要做
 
 1. **設計置換**：`public/css/site.css` 換晒你套新設計嘅CSS，views/public 入面嘅HTML結構可以照用，主要改 class name同排版
