@@ -65,6 +65,36 @@ npm start
 5. Deploy 之後，喺 Railway 嘅 Shell（或者本機連線）一次性跑 `npm run seed` 建立管理員帳號
 6. 之後每次 push 去 GitHub 就自動重新部署，`data/` 入面嘅內容唔會受影響
 
+## Section底圖 + Slider輪播 (仿原站NEWS/Programmes版式)
+
+睇過原網站實際screenshot後，發現版面係**深色底**同**白色底**兩種section交替，每種section內文字色、按鈕位置都唔同：
+
+| Section | 樣式 | 底圖Block Key |
+|---|---|---|
+| 最新消息 News | 深色底+白字+slider | `bg_news` |
+| 活動資訊 Programmes | **白/淺色底**+navy字+日期icon+slider | `bg_programmes` |
+| 刊物 Publications | 深色底，每本書獨立「READ NOW »」按鈕 | `bg_publications` |
+| GDTP | 白底、置中標題、相片一排、MORE喺段落下面 | `bg_gdtp`（未用到，預留） |
+| 關於我們 About Us | 深色底、置中標題+簡介 | `bg_about` |
+| 媒體報導 Media Coverages | 白/淺色底、標題靠左、MORE置中喺grid下面 | (用返press的card-grid，冇底圖slot) |
+| 聯絡我們 Contact Us | 深色底、雙欄置中排版 | `bg_contact` |
+
+底圖一律去 `/admin/pages/home` 新增block，Block Key填返上表對應嗰個就得，冇上傳都唔會爛版（深色底變返純色、淺色底變返白底）。
+
+**GDTP首頁摘要段落**：去 `/admin/pages/gdtp`，新增block，Block Key填 `intro`，填內容就會顯示喺首頁GDTP相片下面嗰段簡介文字。
+
+Slider輪播：多過一條資料就會出現左右箭嘴，一次顯示一張(圖+標題+摘要+VIEW連結)，純CSS scroll-snap + 少量vanilla JS(`public/js/site.js`)，冇用任何外部library。
+
+## 如果想同原網站design完全一致
+
+Theme頁（顏色/字體/logo/自訂CSS）+ 首頁Hero圖呢兩樣加埋，已經涵蓋大部分設計元素。要完全對齊，跟住呢個流程：
+
+1. **攞返原網站嘅實際色碼/字體**：開原網站，F12開發者工具 → Elements → 揀中你想仿製嘅文字/按鈕 → 睇Computed嗰個tab，會見到實際嘅 `color`、`font-family`、`font-size` 數值。將呢啲數值填入 `/admin/theme`。
+2. **上傳Hero大圖**：去 `/admin/pages/home`，新增一個block，Block Key填 `hero`，上傳張KV大圖（例如原站嗰張"DENIM ARTISTRY"圖），首頁會自動變成全版闊嘅hero banner，冇上傳就fallback返做文字標題。
+3. **上傳返啲內容圖**：News/Programmes/GDTP依家啲card係空白，係因為未上傳封面圖，去返對應嘅後台分類逐個補返cover image。
+4. **細節排版微調**：如果想要更貼近原站嘅間距、卡片陰影、hover效果等，用 `/admin/theme` 個「自訂CSS」欄，直接寫CSS覆蓋（例如 `.card { box-shadow: ...; }`），唔使改code。
+5. **結構性改動**（例如完全唔同嘅grid排位、新增原站冇嘅section）就要直接改 `views/public/*.ejs` 同 `public/css/site.css`，呢層Theme頁做唔到，要搵我幫手改code。
+
 ## 網站設計 (後台可換設計)
 
 後台加咗一個「🎨 網站設計」頁（`/admin/theme`），可以喺唔使改code、唔使重新部署嘅情況下即時更換：

@@ -49,7 +49,20 @@ router.get(['/', '/en', '/zh', '/en/home', '/zh/home'], (req, res) => {
   const press = db.prepare('SELECT * FROM press WHERE is_published=1 ORDER BY sort_order, published_date DESC LIMIT 4').all();
   const about = getBlocks('about');
   const contact = getBlocks('contact');
-  res.render('public/home', { news, programmes, publications, designers, press, about, contact });
+  const homeBlocks = getBlocks('home');
+  const gdtpBlocks = getBlocks('gdtp');
+  const gdtpIntro = gdtpBlocks.intro || null;
+  const heroImage = homeBlocks.hero ? homeBlocks.hero.image : null;
+  const sectionBg = {
+    news: homeBlocks.bg_news ? homeBlocks.bg_news.image : null,
+    programmes: homeBlocks.bg_programmes ? homeBlocks.bg_programmes.image : null,
+    press: homeBlocks.bg_press ? homeBlocks.bg_press.image : null,
+    publications: homeBlocks.bg_publications ? homeBlocks.bg_publications.image : null,
+    gdtp: homeBlocks.bg_gdtp ? homeBlocks.bg_gdtp.image : null,
+    about: homeBlocks.bg_about ? homeBlocks.bg_about.image : null,
+    contact: homeBlocks.bg_contact ? homeBlocks.bg_contact.image : null
+  };
+  res.render('public/home', { news, programmes, publications, designers, press, about, contact, heroImage, sectionBg, gdtpIntro });
 });
 
 // ---------- 關於我們 ----------
