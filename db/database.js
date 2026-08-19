@@ -17,7 +17,17 @@ try {
   console.error(e);
 }
 
-const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'data.sqlite');
+let DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'data.sqlite');
+
+// 防呆：如果 DB_PATH 誤設成一個資料夾路徑(例如錯手set成同DATA_DIR一樣)，
+// 自動幫佢加返 data.sqlite，唔會拎住個資料夾去當檔案開
+try {
+  if (fs.existsSync(DB_PATH) && fs.statSync(DB_PATH).isDirectory()) {
+    console.warn(`[db] 警告: DB_PATH="${DB_PATH}" 係一個資料夾，唔係檔案。自動修正為 ${path.join(DB_PATH, 'data.sqlite')}`);
+    console.warn('[db] 建議去Railway Variables刪除DB_PATH呢條env，淨係留低DATA_DIR就夠。');
+    DB_PATH = path.join(DB_PATH, 'data.sqlite');
+  }
+} catch (e) { /* ignore */ }
 
 console.log(`[db] DATA_DIR = ${DATA_DIR}`);
 console.log(`[db] DB_PATH  = ${DB_PATH}`);
