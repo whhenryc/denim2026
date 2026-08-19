@@ -2,9 +2,48 @@
 
 <h1><%= item ? '編輯' : '新增' %>區塊 (<%= pageKey %>)</h1>
 
+<%
+  const KNOWN_KEYS = {
+    home: [
+      { key: 'hero', desc: '首頁最頂全版Hero大圖' },
+      { key: 'bg_news', desc: '最新消息section底圖' },
+      { key: 'bg_programmes', desc: '活動資訊section底圖' },
+      { key: 'bg_publications', desc: '刊物section底圖' },
+      { key: 'bg_gdtp', desc: 'GDTP section底圖' },
+      { key: 'bg_about', desc: '關於我們section底圖' },
+      { key: 'bg_contact', desc: '聯絡我們section底圖' },
+    ],
+    gdtp: [
+      { key: 'intro', desc: 'GDTP首頁摘要段落文字' },
+    ],
+    about: [
+      { key: 'intro', desc: '關於我們簡介' },
+    ],
+    contact: [
+      { key: 'org_info', desc: '機構聯絡資訊' },
+    ],
+  };
+  const suggestions = KNOWN_KEYS[pageKey] || [];
+%>
+
+<% if (suggestions.length) { %>
+  <div style="background:#fff3cd; border:1px solid #ffe08a; padding:16px; border-radius:6px; margin-bottom:20px; font-size:14px;">
+    <strong>⚠️ 呢個頁面要打精確嘅Block Key先會生效（區分大小寫，唔可以有空格）：</strong>
+    <ul style="margin:8px 0 0; padding-left:20px;">
+      <% suggestions.forEach(function(s) { %>
+        <li><code style="background:#fff; padding:2px 6px; border-radius:3px;"><%= s.key %></code> — <%= s.desc %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
 <form method="POST" action="<%= item ? `/admin/pages/${pageKey}/${item.id}` : `/admin/pages/${pageKey}` %>" enctype="multipart/form-data" class="admin-form">
-  <label>Block Key (英文代號，例如 intro / sponsor / organiser)
-    <input type="text" name="block_key" value="<%= item ? item.block_key : '' %>" <%= item ? 'readonly' : '' %> required>
+  <label>Block Key (英文代號，一定要打足上面嗰個先會顯示喺前台)
+    <input type="text" name="block_key" value="<%= item ? item.block_key : '' %>" <%= item ? 'readonly' : '' %>
+      list="block-key-suggestions" required>
+    <datalist id="block-key-suggestions">
+      <% suggestions.forEach(function(s) { %><option value="<%= s.key %>"><% }) %>
+    </datalist>
   </label>
 
   <div class="form-row">

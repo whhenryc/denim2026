@@ -327,10 +327,11 @@ router.get('/pages/:pageKey/:id/edit', (req, res) => {
 router.post('/pages/:pageKey', upload.single('image'), (req, res) => {
   const b = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : (b.existing_image || null);
+  const blockKey = (b.block_key || '').trim();
   db.prepare(`
     INSERT INTO page_blocks (page_key, block_key, title_en, title_zh, content_en, content_zh, image, sort_order)
     VALUES (?,?,?,?,?,?,?,?)
-  `).run(req.params.pageKey, b.block_key, b.title_en, b.title_zh, b.content_en, b.content_zh, image, b.sort_order || 0);
+  `).run(req.params.pageKey, blockKey, b.title_en, b.title_zh, b.content_en, b.content_zh, image, b.sort_order || 0);
   res.redirect(`/admin/pages/${req.params.pageKey}`);
 });
 
