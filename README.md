@@ -60,9 +60,10 @@ npm start
 1. Push 呢個 repo 上 GitHub
 2. Railway 開新 project → Deploy from GitHub repo
 3. 加環境變數：`SESSION_SECRET`、`SEED_ADMIN_USER`、`SEED_ADMIN_PASS`
-4. **重要**：SQLite 檔案需要持久化，Railway 要幫 volume mount 去 `/app/db`（Settings → Volumes），否則每次重新部署資料會被清空
-5. Deploy 之後，喺 Railway 嘅 shell / 或者本機連線一次性跑 `npm run seed` 建立管理員帳號
-6. 之後每次 push 去 GitHub 就自動重新部署
+4. **重要**：SQLite 檔案需要持久化，Railway 要幫 Volume mount 去 **`/app/data`**（Settings → Volumes → Mount Path 填 `/app/data`）
+   ⚠️ **千祈唔可以掛去 `/app/db`**！`db/` 資料夾入面裝住嘅係源碼（`database.js`、`schema.sql`、`seed.js`），如果Volume掛喺嗰度，會將啲源碼頂替走，導致 `Cannot find module '../db/database'` 呢類錯誤。持久化資料同源碼一定要分開資料夾。
+5. Deploy 之後，喺 Railway 嘅 Shell（或者本機連線）一次性跑 `npm run seed` 建立管理員帳號
+6. 之後每次 push 去 GitHub 就自動重新部署，`data/` 入面嘅內容唔會受影響
 
 ## 常見問題 Troubleshooting
 

@@ -21,8 +21,10 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+
 app.use(session({
-  store: new SQLiteStore({ db: 'sessions.sqlite', dir: path.join(__dirname, 'db') }),
+  store: new SQLiteStore({ db: 'sessions.sqlite', dir: DATA_DIR }),
   secret: process.env.SESSION_SECRET || 'change-this-secret-in-env',
   resave: false,
   saveUninitialized: false,
