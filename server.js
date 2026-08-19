@@ -19,9 +19,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+
+// 注意：/uploads 一定要指去 DATA_DIR (跟SQLite共用同一個Railway Volume)，
+// 唔可以用 public/uploads，因為每次重新部署個container filesystem會reset，
+// 擺喺 public/ 入面嘅上傳檔案會跟住消失，但DB仲記住個路徑，變成斷link。
+app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   store: new SQLiteStore({ db: 'sessions.sqlite', dir: DATA_DIR }),

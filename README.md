@@ -109,6 +109,10 @@ Theme頁（顏色/字體/logo/自訂CSS）+ 首頁Hero圖呢兩樣加埋，已�
 
 ## 常見問題 Troubleshooting
 
+**上傳嘅圖片(logo/封面圖等)喺重新部署之後消失/讀唔到**
+呢個係因為上傳檔案本身冇同SQLite database一齊做persist。已經修正：全部上傳（`middleware/upload.js`）而家會寫入 `DATA_DIR/uploads`（同database共用同一個Railway Volume），唔會再受「每次部署container重置」影響。
+如果你之前試過上傳圖，因為嗰陣時仲未做呢個修正，**啲舊檔案已經無咗**（Volume冚起之前佢哋一直存喺會被重置嘅位置），Push呢個新版本、redeploy之後，要重新上傳返一次，之後就會持久保留。
+
 **Railway部署時 `npm install` 失敗，報 `better-sqlite3` / `node-gyp` / `distutils` 錯誤**
 呢個係因為Railway預設用最新Node版本（例如24），`better-sqlite3` 呢類native套件未有對應嘅prebuilt binary，逼佢喺build時編譯，而編譯用嘅python環境又冇`distutils`，於是連環爆錯。
 已經喺呢個project加咗 `package.json` 嘅 `engines` 欄位 + `.nvmrc` + `nixpacks.toml`，鎖定用 **Node 20 LTS**（呢個版本better-sqlite3一定有現成binary，唔使編譯）。如果Railway之後仲係用緊舊版cache，去 Railway → Settings → 清緩存重新部署一次，或者手動喺Railway嘅 Variables 加 `NIXPACKS_NODE_VERSION=20`。
